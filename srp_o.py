@@ -14,7 +14,7 @@ import os
 # --- CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(
     page_title="Optimec Sacha",
-    page_icon="Logo.png",
+    page_icon="logo.png",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -57,7 +57,7 @@ st.markdown("""
 # --- NAVEGACIÓN LATERAL ---
 with st.sidebar:
     st.image(
-        "Company.png",
+        "company.png",
         width=200)  # Placeholder para logo
     st.markdown(
         """
@@ -815,7 +815,7 @@ if selected == "Inicio":
 
     # --- IMAGEN DEBAJO DEL HERO ---
     st.image(
-        "campo_SRP.png",
+        "campo_srp.png",
         use_container_width=True
     )
 
@@ -906,7 +906,7 @@ if selected == "Inicio":
     col_img, col_txt = st.columns([1, 1])
 
     with col_img:
-        st.image("Sacha.png", use_container_width=True)
+        st.image("sacha.png", use_container_width=True)
 
     with col_txt:
         st.markdown("## INFORMACIÓN CAMPO SACHA (ECUADOR)")
