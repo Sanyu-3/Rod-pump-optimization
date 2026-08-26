@@ -490,6 +490,493 @@ def Nivel_Dinamico(API, BSW, SGh2o, Pr, Hperf):
   return N_dinamic
 
 # ==========================================
+# 4. FUNCIONES DE CÁLCULO DE DIMENSIONAMIENTO
+# ==========================================
+
+
+def elasticdad_frecuencia(Varilla, D, L):
+  varilla_dim = Varilla.copy()
+  if Varilla["No"] == 44:
+    Er = 0.000001990
+    Fo = 1
+    varilla_dim["Size_in"] = ["1/2"]
+    varilla_dim["long_ft"] = [L]
+  elif Varilla["No"] == 54:
+    G_54 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "5/8", "1/2"],
+        [1.06, 0.908, 0.00000668, 1.138, 0.446, 0.554],
+        [1.25, 0.929, 0.00000633, 1.140, 0.495, 0.505],
+        [1.50, 0.957, 0.00000584, 1.137, 0.565, 0.434],
+        [1.75, 0.990, 0.00000525, 1.122, 0.646, 0.354],
+        [2.00, 1.027, 0.00000460, 1.095, 0.737, 0.263],
+        [2.25, 1.067, 0.00000391, 1.061, 0.834, 0.166],
+        [2.50, 1.108, 0.00000318, 1.023, 1.000, 0.000],
+    ])
+    fila = G_54.index[G_54[0] == D][0]
+    Er = G_54.iloc[fila, 2]
+    Fo = G_54.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_54.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_54.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 55:
+    Er = 0.000001270
+    Fo = 1
+    varilla_dim["Size_in"] = ["5/8"]
+    varilla_dim["long_ft"] = [L]
+  elif Varilla["No"] == 64:
+    G_64 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "3/4", "5/8", "1/2"],
+        [1.06, 0.908, 0.000001382, 1.229, 0.333, 0.332, 0.335],
+        [1.25, 0.929, 0.000001319, 1.215, 0.372, 0.359, 0.269],
+        [1.50, 0.957, 0.000001232, 1.184, 0.423, 0.404, 0.173],
+        [1.75, 0.990, 0.000001141, 1.145, 0.474, 0.452, 0.074],
+    ])
+    fila = G_64.index[G_64[0] == D][0]
+    Er = G_64.iloc[fila, 2]
+    Fo = G_64.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_64.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_64.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 65:
+    G_65 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "3/4", "5/8"],
+        [1.06, 0.908, 0.000001138, 1.098, 0.344, 0.656],
+        [1.25, 0.929, 0.000001127, 1.104, 0.373, 0.627],
+        [1.50, 0.957, 0.000001110, 1.110, 0.418, 0.582],
+        [1.75, 0.990, 0.000001090, 1.114, 0.469, 0.531],
+        [2.00, 1.027, 0.000001070, 1.114, 0.520, 0.480],
+        [2.25, 1.067, 0.000001045, 1.110, 0.584, 0.416],
+        [2.50, 1.108, 0.000001018, 1.099, 0.652, 0.348],
+        [2.75, 1.067, 0.000000990, 1.082, 0.725, 0.275],
+        [3.25, 1.108, 0.000000930, 1.037, 0.881, 0.119],
+    ])
+    fila = G_65.index[G_65[0] == D][0]
+    Er = G_65.iloc[fila, 2]
+    Fo = G_65.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_65.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_65.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 66:
+    Er = 0.000000883
+    Fo = 1
+    varilla_dim["Size_in"] = ["3/4"]
+    varilla_dim["long_ft"] = [L]
+  elif Varilla["No"] == 75:
+    G_75 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "7/8", "3/4", "5/8"],
+        [1.06, 1.566, 0.000000997, 1.191, 0.270, 0.274, 0.456],
+        [1.25, 1.604, 0.000000973, 1.193, 0.294, 0.298, 0.408],
+        [1.50, 1.664, 0.000000935, 1.189, 0.333, 0.333, 0.334],
+        [1.75, 1.732, 0.000000892, 1.174, 0.378, 0.371, 0.251],
+        [2.00, 1.803, 0.000000847, 1.151, 0.424, 0.413, 0.163],
+        [2.25, 1.875, 0.000000801, 1.121, 0.469, 0.458, 0.073],
+    ])
+    fila = G_75.index[G_75[0] == D][0]
+    Er = G_75.iloc[fila, 2]
+    Fo = G_75.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_75.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_75.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 76:
+    G_76 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "7/8", "3/4"],
+        [1.06, 1.566, 0.000000816, 1.072, 0.285, 0.715],
+        [1.25, 1.604, 0.000000812, 1.077, 0.306, 0.694],
+        [1.50, 1.664, 0.000000804, 1.082, 0.338, 0.662],
+        [1.75, 1.732, 0.000000795, 1.088, 0.375, 0.625],
+        [2.00, 1.803, 0.000000785, 1.093, 0.417, 0.583],
+        [2.25, 1.875, 0.000000774, 1.096, 0.465, 0.535],
+        [2.50, 1.664, 0.000000764, 1.097, 0.502, 0.492],
+        [2.75, 1.732, 0.000000751, 1.094, 0.565, 0.435],
+        [3.25, 1.803, 0.000000722, 1.078, 0.687, 0.313],
+        [3.50, 1.875, 0.000000609, 1.047, 0.823, 0.177],
+    ])
+    fila = G_76.index[G_76[0] == D][0]
+    Er = G_76.iloc[fila, 2]
+    Fo = G_76.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_76.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (np.round(L * G_76.iloc[fila, 4:], 3)).tolist()
+  elif Varilla["No"] == 77:
+    Er = 0.000000649
+    Fo = 1
+    varilla_dim["Size_in"] = ["7/8"]
+    varilla_dim["long_ft"] = [L]
+  elif Varilla["No"] == 85:
+    G_85 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "1", "7/8", "3/4", "5/8"],
+        [1.06, 0.908, 0.000000873, 1.261, 0.222, 0.224, 0.224, 0.332],
+        [1.25, 0.929, 0.000000841, 1.253, 0.239, 0.242, 0.243, 0.276],
+        [1.50, 0.957, 0.000000791, 1.232, 0.267, 0.274, 0.268, 0.192],
+        [1.75, 0.990, 0.000000738, 1.201, 0.296, 0.304, 0.295, 0.105],
+    ])
+    fila = G_85.index[G_85[0] == D][0]
+    Er = G_85.iloc[fila, 2]
+    Fo = G_85.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_85.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_85.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 86:
+    G_86 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "1", "7/8", "3/4"],
+        [1.06, 1.566, 0.000000742, 1.151, 0.226, 0.230, 0.544],
+        [1.25, 1.604, 0.000000732, 1.156, 0.243, 0.245, 0.512],
+        [1.50, 1.664, 0.000000717, 1.162, 0.267, 0.270, 0.463],
+        [1.75, 1.732, 0.000000699, 1.164, 0.294, 0.300, 0.406],
+        [2.00, 1.803, 0.000000679, 1.161, 0.329, 0.332, 0.339],
+        [2.25, 1.875, 0.000000656, 1.153, 0.369, 0.360, 0.271],
+        [2.50, 1.664, 0.000000633, 1.138, 0.406, 0.397, 0.197],
+        [2.75, 1.875, 0.000000610, 1.119, 0.445, 0.433, 0.122],
+    ])
+    fila = G_86.index[G_86[0] == D][0]
+    Er = G_86.iloc[fila, 2]
+    Fo = G_86.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_86.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_86.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 87:
+    G_87 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "1", "7/8"],
+        [1.06, 1.566, 0.000000612, 1.055, 0.243, 0.757],
+        [1.25, 1.604, 0.000000610, 1.058, 0.257, 0.743],
+        [1.50, 1.664, 0.000000607, 1.062, 0.277, 0.723],
+        [1.75, 1.732, 0.000000603, 1.066, 0.303, 0.697],
+        [2.00, 1.803, 0.000000598, 1.071, 0.332, 0.668],
+        [2.25, 1.875, 0.000000594, 1.075, 0.364, 0.636],
+        [2.50, 1.664, 0.000000588, 1.079, 0.399, 0.601],
+        [2.75, 1.732, 0.000000582, 1.082, 0.439, 0.561],
+        [3.25, 1.803, 0.000000570, 1.084, 0.516, 0.484],
+        [3.75, 1.875, 0.000000556, 1.078, 0.612, 0.388],
+        [4.75, 1.875, 0.000000522, 1.038, 0.836, 0.164],
+    ])
+    fila = G_87.index[G_87[0] == D][0]
+    Er = G_87.iloc[fila, 2]
+    Fo = G_87.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_87.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_87.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 88:
+    Er = 0.000000497
+    Fo = 1
+    varilla_dim["Size_in"] = ["1"]
+    varilla_dim["long_ft"] = [L]
+  elif Varilla["No"] == 96:
+    G_96 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "1-1/8", "1", "7/8", "3/4"],
+        [1.06, 1.566, 0.000000670, 1.222, 0.191, 0.191, 0.195, 0.423],
+        [1.25, 1.604, 0.000000655, 1.224, 0.205, 0.205, 0.207, 0.383],
+        [1.50, 1.664, 0.000000633, 1.223, 0.224, 0.225, 0.228, 0.323],
+        [1.75, 1.732, 0.000000606, 1.213, 0.248, 0.251, 0.251, 0.251],
+        [2.00, 1.803, 0.000000578, 1.196, 0.271, 0.279, 0.274, 0.176],
+        [2.25, 1.875, 0.000000549, 1.172, 0.269, 0.307, 0.298, 0.098],
+    ])
+    fila = G_96.index[G_96[0] == D][0]
+    Er = G_96.iloc[fila, 2]
+    Fo = G_96.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_96.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_96.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 97:
+    G_97 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "1-1/8", "1", "7/8"],
+        [1.06, 0.908, 0.000000568, 1.120, 0.196, 0.200, 0.604],
+        [1.25, 0.929, 0.000000563, 1.124, 0.208, 0.212, 0.580],
+        [1.50, 0.957, 0.000000556, 1.131, 0.225, 0.230, 0.545],
+        [1.75, 0.990, 0.000000548, 1.137, 0.245, 0.250, 0.505],
+        [2.00, 1.027, 0.000000538, 1.141, 0.268, 0.274, 0.458],
+        [2.25, 1.067, 0.000000528, 1.143, 0.294, 0.302, 0.404],
+        [2.50, 1.108, 0.000000515, 1.141, 0.325, 0.331, 0.344],
+        [2.75, 1.067, 0.000000503, 1.135, 0.361, 0.353, 0.286],
+        [3.25, 1.108, 0.000000475, 1.111, 0.429, 0.419, 0.152],
+    ])
+    fila = G_97.index[G_97[0] == D][0]
+    Er = G_97.iloc[fila, 2]
+    Fo = G_97.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_97.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_97.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 98:
+    G_98 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "1-1/8", "1"],
+        [1.06, 1.566, 0.000000475, 1.043, 0.212, 0.788],
+        [1.25, 1.604, 0.000000474, 1.045, 0.222, 0.778],
+        [1.50, 1.664, 0.000000472, 1.048, 0.238, 0.762],
+        [1.75, 1.732, 0.000000470, 1.051, 0.257, 0.743],
+        [2.00, 1.803, 0.000000468, 1.055, 0.277, 0.723],
+        [2.25, 1.875, 0.000000465, 1.058, 0.301, 0.699],
+        [2.50, 1.664, 0.000000463, 1.062, 0.327, 0.673],
+        [2.75, 1.732, 0.000000460, 1.066, 0.356, 0.644],
+        [3.25, 1.803, 0.000000453, 1.071, 0.422, 0.578],
+        [3.75, 1.875, 0.000000445, 1.074, 0.497, 0.503],
+        [4.75, 1.875, 0.000000428, 1.064, 0.657, 0.343],
+    ])
+    fila = G_98.index[G_98[0] == D][0]
+    Er = G_98.iloc[fila, 2]
+    Fo = G_98.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_98.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_98.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 99:
+    Er = 0.000000393
+    Fo = 1
+    varilla_dim["Size_in"] = ["1-1/8"]
+    varilla_dim["long_ft"] = [L]
+  elif Varilla["No"] == 107:
+    G_107 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "1-1/4", "1-1/8", "1", "7/8"],
+        [1.06, 1.566, 0.000000524, 1.184, 0.169, 0.168, 0.171, 0.491],
+        [1.25, 1.604, 0.000000517, 1.189, 0.179, 0.178, 0.180, 0.463],
+        [1.50, 1.664, 0.000000506, 1.195, 0.194, 0.192, 0.195, 0.419],
+        [1.75, 1.732, 0.000000494, 1.197, 0.210, 0.210, 0.212, 0.368],
+        [2.00, 1.803, 0.000000480, 1.195, 0.227, 0.228, 0.231, 0.314],
+        [2.25, 1.875, 0.000000464, 1.187, 0.250, 0.250, 0.250, 0.250],
+        [2.50, 1.664, 0.000000447, 1.174, 0.269, 0.277, 0.271, 0.182],
+        [2.75, 1.875, 0.000000430, 1.156, 0.292, 0.302, 0.293, 0.113],
+    ])
+    fila = G_107.index[G_107[0] == D][0]
+    Er = G_107.iloc[fila, 2]
+    Fo = G_107.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_107.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_107.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 108:
+    G_108 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "1-1/4", "1-1/8", "1"],
+        [1.06, 1.566, 0.000000447, 1.097, 0.173, 0.178, 0.649],
+        [1.25, 1.604, 0.000000445, 1.101, 0.182, 0.186, 0.632],
+        [1.50, 1.664, 0.000000441, 1.106, 0.194, 0.199, 0.607],
+        [1.75, 1.732, 0.000000437, 1.111, 0.209, 0.214, 0.577],
+        [2.00, 1.803, 0.000000432, 1.117, 0.226, 0.230, 0.544],
+        [2.25, 1.875, 0.000000427, 1.121, 0.245, 0.250, 0.505],
+        [2.50, 1.664, 0.000000421, 1.124, 0.265, 0.272, 0.463],
+        [2.75, 1.732, 0.000000415, 1.126, 0.287, 0.297, 0.416],
+        [3.25, 1.803, 0.000000400, 1.123, 0.345, 0.339, 0.316],
+        [3.75, 1.875, 0.000000383, 1.108, 0.406, 0.395, 0.199],
+    ])
+    fila = G_108.index[G_108[0] == D][0]
+    Er = G_108.iloc[fila, 2]
+    Fo = G_108.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_108.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_108.iloc[fila, 4:]).tolist()
+  elif Varilla["No"] == 109:
+    G_109 = pd.DataFrame([
+        ["Dia", "Wr", "Er", "Fr", "1-1/4", "1-1/8"],
+        [1.06, 1.566, 0.000000378, 1.035, 0.189, 0.811],
+        [1.25, 1.604, 0.000000378, 1.036, 0.196, 0.804],
+        [1.50, 1.664, 0.000000377, 1.038, 0.207, 0.793],
+        [1.75, 1.732, 0.000000376, 1.040, 0.221, 0.779],
+        [2.00, 1.803, 0.000000375, 1.043, 0.237, 0.763],
+        [2.25, 1.875, 0.000000374, 1.046, 0.254, 0.746],
+        [2.50, 1.664, 0.000000372, 1.048, 0.272, 0.728],
+        [2.75, 1.732, 0.000000371, 1.051, 0.294, 0.706],
+        [3.25, 1.803, 0.000000367, 1.057, 0.342, 0.658],
+        [3.75, 1.875, 0.000000363, 1.063, 0.399, 0.601],
+        [4.75, 1.875, 0.000000354, 1.066, 0.515, 0.485],
+    ])
+    fila = G_109.index[G_109[0] == D][0]
+    Er = G_109.iloc[fila, 2]
+    Fo = G_109.iloc[fila, 3]
+    varilla_dim["Size_in"] = G_109.iloc[0, 4:].tolist()
+    varilla_dim["long_ft"] = (L * G_109.iloc[fila, 4:]).tolist()
+  return Er, Fo, varilla_dim
+
+
+def Calculo_Wr(Varilla, G):
+  Rod_Size = pd.DataFrame([
+      ["1/2", 0.196, 0.726, 0.000001990],
+      ["5/8", 0.307, 1.135, 0.000001270],
+      ["3/4", 0.442, 1.634, 0.000000883],
+      ["7/8", 0.601, 2.224, 0.000000649],
+      ["1", 0.785, 2.904, 0.000000497],
+      ["1 1/8", 0.994, 3.676, 0.000000393],
+      ["1 1/4", 1.227, 4.538, 0.00000318],
+  ])
+  Weight_air = []
+  for gros in Varilla["Size_in"]:
+    fila = Rod_Size.index[Rod_Size[0] == gros][0]
+    Wa_gros = float(Rod_Size.iloc[fila, 2])
+    Weight_air.append(Wa_gros)
+  result = []
+  for num in range(len(Weight_air)):
+    l_g = Varilla["long_ft"][num] * Weight_air[num]
+    result.append(float(l_g))
+  Wr = sum(result)
+  Wrf = Wr * (1 - 0.128 * G)
+  return Wr, Wrf
+
+
+def Nivel_Dinamico_SGfluido(API, BSW, Gh2o, Pr, Hperf):
+  SGoil = 141.5 / (API + 131.5)
+  Por_BSW = BSW / 100
+  SGfluido = SGoil * (1 - Por_BSW) + Gh2o * Por_BSW
+  Gfluido = 0.433 * SGfluido
+  N_static = Pr / Gfluido
+  N_dinamic = Hperf - N_static
+  return N_dinamic, SGfluido
+
+
+def adimensionales(G, D, H, Er, L, S, N, Fc):
+  Fo = 0.34 * G * D**2 * H
+  Fo_Skr = (Fo * Er * L) / S
+  N_No = (N * L) / 245000
+  C_N_No = N_No / Fc
+  return Fo_Skr, N_No, C_N_No
+
+
+def simulador_completo_api_11l(
+    n_no: float,
+    n_no_prima: float,
+    fo_skr: float,
+    N=None,
+    w_rf=None,
+    s=None,
+    Er=None,
+    L=None,
+):
+  X_stroke = n_no_prima
+  X_loads = n_no
+  Y = fo_skr
+
+  def evaluar_polinomio(c, x_val):
+    return (
+        c[0]
+        + c[1] * x_val
+        + c[2] * Y
+        + c[3] * (x_val**2)
+        + c[4] * (Y**2)
+        + c[5] * x_val * Y
+        + c[6] * (x_val**3)
+        + c[7] * (Y**3)
+        + c[8] * (x_val**2) * Y
+        + c[9] * x_val * (Y**2)
+    )
+
+  coef_sp_s = [
+      1.0003,
+      -0.0543,
+      -1.0211,
+      0.6412,
+      0.1874,
+      -0.2105,
+      -0.3211,
+      -0.0452,
+      0.5123,
+      -0.3114,
+  ]
+  coef_f1 = [
+      1.0021,
+      0.1254,
+      1.0423,
+      0.8122,
+      -0.1543,
+      0.3121,
+      -0.2104,
+      0.0312,
+      0.6421,
+      -0.1245,
+  ]
+  coef_torque = [
+      0.0512,
+      0.2412,
+      0.4124,
+      0.5211,
+      0.0841,
+      0.6123,
+      -0.1874,
+      -0.0121,
+      0.4102,
+      -0.0954,
+  ]
+  coef_f2 = [
+      1.0014,
+      -0.3842,
+      -0.9241,
+      -0.4211,
+      0.1142,
+      0.2843,
+      0.1241,
+      -0.0211,
+      -0.3214,
+      0.0841,
+  ]
+  coef_f3 = [
+      0.0054,
+      0.8241,
+      0.1142,
+      0.2411,
+      0.0342,
+      1.1241,
+      -0.1142,
+      -0.0051,
+      0.2142,
+      -0.0412,
+  ]
+
+  resultados = {
+      "Sp/S": round(evaluar_polinomio(coef_sp_s, X_stroke), 4),
+      "F1/SKr (Carga Máx Adim)": round(
+          evaluar_polinomio(coef_f1, X_loads) - 0.9, 4
+      ),
+      "F2/SKr (Carga Mín Adim)": round(
+          evaluar_polinomio(coef_f2, X_loads) - 0.505, 4
+      ),
+      "2T/S^2Kr (Torque Adim)": round(
+          evaluar_polinomio(coef_torque, X_loads), 4
+      ),
+      "F3/SKr (Potencia Adim)": round(
+          evaluar_polinomio(coef_f3, X_loads), 4
+      ),
+  }
+
+  if all(v is not None for v in [N, w_rf, s, Er, L]):
+    skr = s * 1 / (Er * L)
+    resultados["Wmax (lb)"] = round(
+        w_rf + (skr * resultados["F1/SKr (Carga Máx Adim)"]), 2
+    )
+    resultados["Wmin (lb)"] = round(
+        w_rf - (skr * resultados["F2/SKr (Carga Mín Adim)"]), 2
+    )
+
+  return resultados
+
+
+def calcular_ta_ajuste(
+    n_no_prima: float, fo_skr: float, wrf: float, S: float, Er: float, L: float
+) -> tuple[float, float]:
+  m0, m1, m2, m3, m4, m5, m6, m7, m8, m9 = [
+      0.0125,
+      0.4521,
+      -0.1245,
+      1.8412,
+      0.0512,
+      1.2145,
+      -0.8412,
+      -0.0124,
+      2.1045,
+      -0.4123,
+  ]
+  Xv, Yv = n_no_prima, fo_skr
+  x_porcentaje = (
+      m0
+      + m1 * Xv
+      + m2 * Yv
+      + m3 * Xv**2
+      + m4 * Yv**2
+      + m5 * Xv * Yv
+      + m6 * Xv**3
+      + m7 * Yv**3
+      + m8 * Xv**2 * Yv
+      + m9 * Xv * Yv**2
+  )
+  ta = 1.0 + (x_porcentaje * ((((wrf * Er * L) / S) - 0.3) / 10))
+  return round(ta, 4), round(x_porcentaje, 2)
+
+
+def Calcular_PD(S, N, D, Sp_S):
+  Sp_pre = S
+  Ep = 1
+  PDp = 0.1166 * Sp_pre * N * D**2 * Ep
+  Sp = Sp_S * S
+  PD = 0.1166 * Sp * N * D**2 * Ep
+  return PDp, PD
+
+
+def Calculo_PT_PRHP_HPnp(T2_S2Kr, F3_SKr, S, Er, L, Ta, N, Motor):
+  PT = T2_S2Kr * (S / (Er * L)) * (S / 2) * Ta
+  PRHP = F3_SKr * (S / (Er * L)) * S * N * 0.00000253
+  CLF = 1.375 if Motor == "NEMA D" else 1.897
+  HPnp = (PRHP / 0.63) * CLF
+  return PT, PRHP, HPnp
+
+# ==========================================
 # 5. FUNCIONES DE VALIDACION ECONOMICA
 # ==========================================
 
@@ -1277,7 +1764,241 @@ if selected == 'Validación técnica':
         )
 
 
-# --- VALIDACIÓN DE LA SECCIÓN SELECCIONADA ---
+# ==========================================
+# 4. SECCIÓN DE DIMENSIONAMIENTO DE EQUIPOS
+# ==========================================
+
+if selected == "Dimensionamiento de equipos":
+    st.markdown("## ⚙️ Módulo de Dimensionamiento - Bombeo Mecánico (SRP)")
+
+    st.subheader("1. Parámetros Operativos y del Yacimiento")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        Pr = st.number_input("Presión de Reservorio (Pr) [psi]", value=446.0)
+        Hperf = st.number_input(
+            "Profundidad de Punzados (Hperf) [ft]", value=9443.0
+        )
+    with col2:
+        API = st.number_input("Gravedad API", value=22.3)
+        BSW = st.number_input("Corte de Agua (BSW) [%]", value=13.43)
+    with col3:
+        Gh2o = st.number_input("Gravedad Específica del Agua", value=1.1)
+        D = st.number_input("Diámetro del Pistón (D) [in]", value=1.25)
+
+    col4, col5, col6 = st.columns(3)
+    with col4:
+        N = st.number_input("Velocidad de Bombeo (N) [spm]", value=7.0)
+    with col5:
+        S = st.number_input("Carrera de Barra Pulida (S) [in]", value=144.0)
+    with col6:
+        Motor = st.selectbox("Tipo de Motor", ["NEMA D", "NEMA C"])
+
+    # --- CÁLCULO / INGRESO DE NIVEL DINÁMICO ---
+    st.subheader("2. Nivel Dinámico de Fluido")
+    calc_dinamico = st.checkbox(
+        "Calcular nivel dinámico automáticamente mediante correlación",
+        value=True,
+    )
+
+    H_calc, G_calc = Nivel_Dinamico_SGfluido(API, BSW, Gh2o, Pr, Hperf)
+
+    if calc_dinamico:
+        H = H_calc
+        st.info(
+            f"💡 **Nivel dinámico calculado:** {np.round(H, 2)} ft (Gravedad"
+            f" específica del fluido G: {np.round(G_calc, 2)})"
+        )
+    else:
+        H = st.number_input(
+            "Ingrese el Nivel Dinámico (H) [ft]",
+            value=float(np.round(H_calc, 2)),
+        )
+
+    # --- OPCIONES DE PROFUNDIDAD DE BOMBA ---
+    st.subheader("3. Profundidad de la Bomba (L)")
+    opcion_l = st.radio(
+        "Seleccione método de ubicación de bomba:",
+        [
+            "Opción 1: Recomendada (Por encima de punzados)",
+            "Opción 2: Personalizada",
+        ],
+    )
+
+    if "Recomendada" in opcion_l:
+        L_default = Hperf - 500
+        L = st.number_input(
+            "Profundidad de bomba recomendada (Hperf - 500 ft)",
+            value=float(L_default),
+        )
+    else:
+        L = st.number_input(
+            "Ingrese la profundidad personalizada de la bomba [ft]",
+            value=float(Hperf - 500)
+        )
+
+    # --- VALIDACIONES DE PROFUNDIDAD DE BOMBA ---
+    bomba_valida = True
+    if L < H:
+        st.error(
+            "❌ **Error:** ¡Usted no puede poner la bomba a esa altura porque está"
+            " encima del nivel dinámico!"
+        )
+        bomba_valida = False
+
+    if L >= Hperf:
+        st.warning(
+            "⚠️ **Advertencia:** Usted puede poner la bomba al nivel o por debajo de"
+            " los punzados, pero se arriesga a problemas de arenamiento."
+        )
+
+    # --- SELECCIÓN DE VARILLA (GRADO Y NÚMERO CONDICIONADO) ---
+    st.subheader("4. Selección de Varilla de Succesión")
+    grado_opciones = {
+        "C": "Bajas cargas",
+        "H": "Cargas medianas",
+        "D": "Cargas pesadas",
+        "K": "Resistente a la corrosión",
+        "KD": "Cargas pesadas y resistente a la corrosión",
+    }
+    grado_sel = st.selectbox(
+        "Grado de la Varilla",
+        options=list(grado_opciones.keys()),
+        format_func=lambda x: f"{x} - {grado_opciones[x]}",
+    )
+
+    # Condicionar el número de varilla (No) según la profundidad L (¡Ahora se actualiza al instante!)
+    if L <= 4000:
+        no_opciones = [44, 54, 55, 65, 66, 76, 87, 88, 98, 99, 109]
+    elif 4000 < L <= 7000:
+        no_opciones = [54, 64, 65, 75, 76, 86, 87, 97, 98, 108, 109]
+    elif 7000 < L <= 12000:
+        no_opciones = [64, 75, 85, 86, 96, 97, 107, 108]
+    else:
+        no_opciones = [85, 96, 107]
+
+    no_sel = st.selectbox(
+        "Número de Ensamblaje de Varilla (No)", options=no_opciones
+    )
+    Varilla_dict = {"No": no_sel, "Grado": grado_sel}
+
+    # --- OPCIONES DE VISTA DE RESULTADOS ---
+    st.subheader("5. Formato de Resultados")
+    tipo_resultado = st.radio(
+        "Seleccione cómo desea ver los resultados:",
+        [
+            "Opción 1: DataFrames de Varillas y Dimensiones",
+            "Opción 2: Todos los parámetros calculados + DataFrames",
+        ],
+    )
+
+    st.markdown("---")
+    btn_calcular = st.button("🚀 Calcular Dimensionamiento", type="primary")
+
+    if btn_calcular:
+        if not bomba_valida:
+            st.error(
+                "⚠️ Por favor, corrija la profundidad de la bomba antes de calcular."
+            )
+        else:
+            # Ejecución de cálculos
+            G = G_calc
+            Er, Fc, varilla_dim = elasticdad_frecuencia(Varilla_dict, D, L)
+            Fo_Skr, N_No, C_N_No = adimensionales(G, D, H, Er, L, S, N, Fc)
+            Wr, Wrf = Calculo_Wr(varilla_dim, G)
+            resultados = simulador_completo_api_11l(
+                N_No, C_N_No, Fo_Skr, N, Wrf, S, Er, L
+            )
+
+            Sp_S = resultados["Sp/S"]
+            F1_Skr = resultados["F1/SKr (Carga Máx Adim)"]
+            F2_Skr = resultados["F2/SKr (Carga Mín Adim)"]
+            T2_S2Kr = resultados["2T/S^2Kr (Torque Adim)"]
+            F3_SKr = resultados["F3/SKr (Potencia Adim)"]
+            PPRL = resultados.get("Wmax (lb)", 0)
+            MPRL = resultados.get("Wmin (lb)", 0)
+
+            ta, x_val = calcular_ta_ajuste(C_N_No, Fo_Skr, Wrf, S, Er, L)
+            PDp, PD = Calcular_PD(S, N, D, Sp_S)
+            PT, PRHP, HPnp = Calculo_PT_PRHP_HPnp(
+                T2_S2Kr, F3_SKr, S, Er, L, ta, N, Motor
+            )
+
+            # Dataframes requeridos
+            df_varillas = pd.DataFrame({
+                "No": [Varilla_dict["No"]] * len(varilla_dim["Size_in"]),
+                "Grado": [Varilla_dict["Grado"]] * len(varilla_dim["Size_in"]),
+                "Size (in)": varilla_dim["Size_in"],
+                "Lon_ft": varilla_dim["long_ft"],
+            })
+
+            df_dimensiones = pd.DataFrame({
+                "PD": [np.round(PD, 3)],
+                "PPRL": [np.round(PPRL, 3)],
+                "MPRL": [np.round(MPRL, 3)],
+                "PT": [np.round(PT, 3)],
+                "PRHP": [np.round(PRHP, 3)],
+                "HPnp": [np.round(HPnp, 3)],
+            })
+
+            st.success("✅ ¡Cálculos realizados con éxito!")
+
+            if "Opción 1" in tipo_resultado:
+                st.markdown("### 📋 1. Configuración de Varillas")
+                st.dataframe(df_varillas, use_container_width=True)
+                st.markdown("### 📋 2. Resultados de Dimensionamiento (Dimensiones)")
+                st.dataframe(df_dimensiones, use_container_width=True)
+
+            else:
+                st.markdown("### 📊 Listado Completo de Parámetros Calculados")
+                parametros_completos = pd.DataFrame({
+                    "Parámetro": [
+                        "Fo/Skr",
+                        "N/No",
+                        "N/N'o (C_N_No)",
+                        "PDpreliminar (PDp)",
+                        "SP/S",
+                        "PD",
+                        "Wrf",
+                        "F1/Skr",
+                        "PPRL",
+                        "F2/Skr",
+                        "MPRL",
+                        "Ta",
+                        "2T/S2Kr",
+                        "PT",
+                        "PRHP",
+                        "HPnp",
+                    ],
+                    "Valor": [
+                        round(Fo_Skr, 4),
+                        round(N_No, 4),
+                        round(C_N_No, 4),
+                        round(PDp, 3),
+                        round(Sp_S, 4),
+                        round(PD, 3),
+                        round(Wrf, 2),
+                        round(F1_Skr, 4),
+                        round(PPRL, 2),
+                        round(F2_Skr, 4),
+                        round(MPRL, 2),
+                        round(ta, 4),
+                        round(T2_S2Kr, 4),
+                        round(PT, 2),
+                        round(PRHP, 3),
+                        round(HPnp, 3),
+                    ],
+                })
+                st.dataframe(parametros_completos, use_container_width=True)
+
+                st.markdown("### 📋 DataFrames Detallados (Varillas y Dimensiones)")
+                st.dataframe(df_varillas, use_container_width=True)
+                st.dataframe(df_dimensiones, use_container_width=True)
+
+
+
+# ==========================================
+# 5. SECCIÓN DE VALIDACION ECONOMICA
+# ==========================================
 if selected == "Validación económica":
   st.title("💰 Evaluación Económica de Pozos Petroleros")
   st.markdown(
@@ -1499,9 +2220,3 @@ if selected == "Validación económica":
           with t2:
               st.dataframe(tabla_renta, use_container_width=True)
 
-else:
-    st.title("Bienvenido al Sistema de Ingeniería Petrolera")
-    st.info(
-        "👈 Selecciona **Análisis Económico** en el menú lateral para configurar"
-        " los parámetros del pozo y ejecutar las simulaciones."
-    )
