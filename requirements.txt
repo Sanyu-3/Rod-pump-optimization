@@ -8,3 +8,4 @@ streamlit_option_menu
 scipy
 numpy_financial
 missingno
+openpyxl
