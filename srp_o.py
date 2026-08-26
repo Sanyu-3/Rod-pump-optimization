@@ -1291,7 +1291,7 @@ if selected == "Inicio":
         margin-bottom: 30px;
     ">
         <h1 style="color:#f39c12; font-size:42px; margin-bottom:10px;">
-            Production Analysis Dashboard
+            Sucker Rod Pumping Optimizer
         </h1>
         <p style="color:#d1d5db; font-size:18px; max-width:900px;">
             Solución digital interactiva para el diagnóstico, simulación y optimización
