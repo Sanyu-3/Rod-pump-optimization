@@ -58,7 +58,8 @@ st.markdown("""
 with st.sidebar:
     st.image(
         "company.png",
-        width=200)  # Placeholder para logo
+        width=280  # Tamaño incrementado
+    )
     st.markdown(
         """
         <div style="
