@@ -69,7 +69,7 @@ with st.sidebar:
             font-weight:700;
             margin-bottom:12px;
         ">
-            Optimec Sacha
+            Sucker rod pump optimizer
         </div>
         """,
         unsafe_allow_html=True
