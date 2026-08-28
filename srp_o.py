@@ -1422,11 +1422,11 @@ if selected == "Inicio":
     # ---------------- INPUTS ----------------
     with main_col1:
         with st.container(border=True):
-            st.markdown("# COMO SE FORMO EL PETROLEO")
-            st.markdown("## rompiendo mitos, el petroleo se forma de una manera increible"
-                        ", y no es de los dinosaurios como todos creen")
+            st.markdown("# QUE SON LOS BALANCINES PETROLEROS")
+            st.markdown("## rompiendo mitos, conoce los balancines petroleros"
+                        ", la herramienta maestra de la industria petrolera mundial")
             # --- VIDEO LOCAL ---
-            st.video("https://www.youtube.com/watch?v=KQbWFGB_Io4")
+            st.video("https://www.youtube.com/watch?v=Oxjzj6n636I")
     with main_col2:
         with st.container(border=True):
             st.markdown("# QUE ES LA INGERNERIA PETROLERA")
