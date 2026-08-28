@@ -1295,8 +1295,7 @@ if selected == "Inicio":
             Sucker Rod Pumping Optimizer
         </h1>
         <p style="color:#d1d5db; font-size:18px; max-width:900px;">
-            Solución digital interactiva para el diagnóstico, simulación y optimización
-             integral de sistemas de levantamiento artificial por bombeo mecánico.
+            Solución digital interactiva para el diagnóstico, simulación y optimización integral de sistemas de levantamiento artificial por bombeo mecánico.
         </p>
     </div>
     """, unsafe_allow_html=True)
