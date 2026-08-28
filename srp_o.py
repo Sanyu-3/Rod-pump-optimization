@@ -1440,7 +1440,7 @@ if selected == "Inicio":
         "operacionales y entrenamiento en ingeniería de producción."
     )
     st.info(
-        "📌 Esta pagina fue desarrollada por Marco Aspiazu (Petroleos)."
+        "📌 Este aplicativo fue desarrollado por Marco Aspiazu Gonzalez (Sanyu) Estudiante de la carrera de petroleos en la ESPOL."
     )
 
 # ==========================================
