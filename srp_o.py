@@ -1599,7 +1599,7 @@ if selected == 'Validación técnica':
         ' mecánico.'
     )
 
-    st.subheader('⚙️ Parámetros del Pozo (Campo Sacha)')
+    st.subheader('⚙️ Parámetros del Pozo')
 
     # Dividimos las entradas en 3 columnas equilibradas
     col1, col2, col3 = st.columns(3)
