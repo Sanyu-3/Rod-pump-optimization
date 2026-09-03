@@ -490,6 +490,115 @@ def Nivel_Dinamico(API, BSW, SGh2o, Pr, Hperf):
   N_dinamic = Hperf - N_static
   return N_dinamic
 
+
+# ==========================================
+# 4. FUNCIONES DE analisis nodal
+# ==========================================
+
+def grad_flu(api, wc):
+    gamma_o = 141.5 / (api + 131.5)
+    gamma_w = 1.03  # Usando el SGH2O = 1.03 proporcionado
+    gamma_f = gamma_w * wc + gamma_o * (1 - wc)
+    return gamma_f * 0.433
+
+
+def generar_tabla_ipr(pr, pb, j, api, wc, hperf, p_wf):
+    q_list = []
+    nivel_estatico_list = []
+    nivel_dinamico_list = []
+    grad_psi_ft = grad_flu(api, wc)
+
+    # Nivel estático basado en la presión de reservorio y la profundidad/referencia
+    nivel_estatico_base = hperf - (pr / grad_psi_ft) if grad_psi_ft > 0 else 0.0
+
+    for p in p_wf:
+        if p >= pb:
+            q = j * (pr - p)
+        else:
+            q_pb = j * (pr - pb)
+            q = q_pb + (j * pb / 1.8) * (
+                        1 - 0.2 * (p / pb) - 0.8 * (p / pb) ** 2) if pb > 0 else j * (
+                        pr - p)
+
+        q_list.append(max(0, q))
+        nivel_estatico_list.append(nivel_estatico_base)
+
+        # Cálculo del nivel dinámico
+        nivel_din = hperf - (p / grad_psi_ft) if grad_psi_ft > 0 else 0.0
+        nivel_dinamico_list.append(nivel_din)
+
+    df = pd.DataFrame({
+        "Presión de Fondo (Pwf) [psi]": p_wf,
+        "Caudal (Q) [BPD]": q_list,
+        "Nivel Estático [ft]": nivel_estatico_list,
+        "Nivel Dinámico [ft]": nivel_dinamico_list
+    })
+    return df
+
+
+def graf_analisis_nodal(Pozo, Ndinamic, Q, caudal_requerido):
+    prof = np.array([6000, 7000, 8000, 9000, 10000])  # ft
+    result = {
+        "100 in - 7 SPM": [78.3, 73.2, 74.4, 68.2, 57.3],
+        "120 in - 7 SPM": [96.8, 90.8, 93.1, 90.0, 74.9],
+        "100 in - 8 SPM": [87.7, 90.1, 88.1, 72.4, 73.2],
+        "120 in - 8 SPM": [107.3, 110.7, 112.1, 94.3, 93.8],
+        "100 in - 9 SPM": [103.5, 105.8, 90.0, 89.7, 92.6],
+        "120 in - 9 SPM": [126.3, 130.9, 115.2, 113.2, 116.4]
+    }
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=Ndinamic,
+        y=Q,
+        mode='lines+markers',
+        name='IPR',
+        line=dict(color='red', width=2),
+        marker=dict(size=8, symbol='circle')
+    ))
+
+    plotly_markers = ['diamond', 'square', 'cross', 'pentagon', 'star', 'triangle-up',
+                      'triangle-down', 'hexagram']
+    plotly_colors = ['blue', 'gold', 'green', 'cyan', 'magenta', 'orange', 'pink',
+                     'purple', 'black', 'brown']
+
+    for idx, (etiqueta_bombeo, caudales) in enumerate(result.items()):
+        marker_actual = plotly_markers[idx % len(plotly_markers)]
+        color_actual = plotly_colors[idx % len(plotly_colors)]
+
+        fig.add_trace(go.Scatter(
+            x=prof,
+            y=caudales,
+            mode='lines+markers',
+            name=etiqueta_bombeo,
+            line=dict(color=color_actual, width=2),
+            marker=dict(symbol=marker_actual, size=8)
+        ))
+
+    if caudal_requerido is not None:
+        fig.add_shape(
+            type="line",
+            x0=min(prof), x1=max(prof),
+            y0=caudal_requerido, y1=caudal_requerido,
+            line=dict(color="gray", width=1.5, dash="dash")
+        )
+
+    fig.update_layout(
+        title=f"<b>Análisis Nodal - Sistemas de Bombeo Mecánico: {Pozo}</b>",
+        xaxis_title="Profundidad de bomba (ft)",
+        yaxis_title="Caudal (Bpd)",
+        xaxis=dict(range=[min(prof), max(prof)]),
+        template="plotly_white",
+        legend=dict(x=1.05, y=1, xanchor='left', yanchor='top'),
+        hovermode="closest",
+        margin=dict(t=60, b=40, l=60, r=150)
+    )
+
+    return fig
+
+
+
 # ==========================================
 # 4. FUNCIONES DE CÁLCULO DE DIMENSIONAMIENTO
 # ==========================================
@@ -1763,6 +1872,80 @@ if selected == 'Validación técnica':
             use_container_width=True,
             hide_index=True,  # Elimina la columna de índices de la izquierda
         )
+
+
+# ==========================================
+# 3. SECCIÓN DE analisis nodal
+# ==========================================
+
+if selected == "Análisis Nodal":
+    st.header("Análisis Nodal y Gráfica del Sistema")
+
+    st.subheader("1. Generación de Tabla IPR")
+
+    col_p1, col_p2, col_p3 = st.columns(3)
+    with col_p1:
+        pozo_nombre = st.text_input("Nombre del Pozo", value="SCH - 156",
+                                    key="nodal_pozo")
+        pr = st.number_input("Presión de Reservorio (Pr) [psi]", value=269.0, step=10.0,
+                             key="nodal_pr")
+        pb = st.number_input("Presión de Burbuja (Pb) [psi]", value=150.0, step=10.0,
+                             key="nodal_pb")
+    with col_p2:
+        j = st.number_input("Índice de Productividad (J) [BPD/psi]", value=0.36,
+                            step=0.01, key="nodal_j")
+        api = st.number_input("Gravedad API [°API]", value=21.4, step=0.1,
+                              key="nodal_api")
+    with col_p3:
+        wc = st.number_input("Corte de Agua (Wc) [%]", value=14.0, step=1.0,
+                             key="nodal_wc") / 100.0
+        hperf = st.number_input("Profundidad de Perforación (Hperf) [ft]", value=9432.0,
+                                step=50.0, key="nodal_hperf")
+
+    # Vector de presiones de fondo: empieza en Pr y baja de 10 en 10 hasta 0
+    if pr > 0:
+        p_wf = np.arange(pr, -1, -10)
+        if p_wf[-1] != 0:
+            p_wf = np.append(p_wf, 0.0)
+    else:
+        p_wf = np.array([0.0])
+
+    # Llamada a la función externa con los parámetros ajustados
+    df_resultado = generar_tabla_ipr(pr, pb, j, api, wc, hperf, p_wf)
+
+    # Métricas requeridas (Caudal Máximo y Nivel Dinámico Final/Último)
+    m1, m2 = st.columns(2)
+    with m1:
+        caudal_maximo = df_resultado["Caudal (Q) [BPD]"].iloc[-1]
+        st.metric(label="Caudal Máximo", value=f"{caudal_maximo:.2f} BPD")
+
+    with m2:
+        nivel_dinamico_ultimo = df_resultado["Nivel Dinámico [ft]"].iloc[-1]
+        st.metric(label="Nivel Dinámico (Último)",
+                  value=f"{nivel_dinamico_ultimo:.2f} ft")
+
+    st.dataframe(df_resultado, use_container_width=True)
+
+    # 2. Segunda sección: Caudal requerido y Gráfica del programa
+    st.markdown("---")
+    st.subheader("2. Evaluación de Caudal Requerido y Análisis Gráfico")
+
+    caudal_requerido = st.number_input(
+        "Ingrese el valor de Caudal Requerido [BPD]",
+        value=float(caudal_maximo * 0.6) if caudal_maximo > 0 else 10.0,
+        step=5.0,
+        key="nodal_q_req"
+    )
+
+    fig_nodal = graf_analisis_nodal(
+        Pozo=pozo_nombre,
+        Ndinamic=df_resultado["Nivel Dinámico [ft]"],
+        Q=df_resultado["Caudal (Q) [BPD]"],
+        caudal_requerido=caudal_requerido
+    )
+
+    if fig_nodal is not None:
+        st.plotly_chart(fig_nodal, use_container_width=True)
 
 
 # ==========================================
